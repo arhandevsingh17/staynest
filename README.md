@@ -22,6 +22,28 @@ It is built as a **beginner-friendly open-source project**: real features, clear
 | Backend  | Node.js, Express, JWT, bcrypt        |
 | Database | MongoDB with Mongoose                |
 
+## 📸 Screenshots
+
+### Explore
+
+![StayNest Explore](./docs/screenshots/explore.png)
+
+### Listing Detail
+
+![Listing Detail](./docs/screenshots/listing-detail.png)
+
+### My Trips
+
+![My Trips](./docs/screenshots/my-trips.png)
+
+### Host Dashboard
+
+![Host Dashboard](./docs/screenshots/host-dashboard.png)
+
+### Demo
+
+![StayNest Demo](./docs/staynest-demo.gif)
+
 ## 📁 Folder structure
 
 ```
