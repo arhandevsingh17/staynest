@@ -1,3 +1,4 @@
+import escapeRegex from '../utils/escapeRegex.js';
 import Listing from '../models/Listing.js';
 import Review from '../models/Review.js';
 import Booking from '../models/Booking.js';
@@ -9,7 +10,7 @@ export const getListings = asyncHandler(async (req, res) => {
   const { city, type, minPrice, maxPrice, guests } = req.query;
   const filter = { isActive: true };
 
-  if (city) filter.city = new RegExp(`^${city}`, 'i');
+  if (city) filter.city = new RegExp(`^${escapeRegex(city)}`, 'i');
   if (type) filter.type = type;
   if (guests) filter.maxGuests = { $gte: Number(guests) };
   if (minPrice || maxPrice) {
