@@ -1,3 +1,5 @@
+[![CI](https://github.com/vikas0799/staynest/actions/workflows/ci.yml/badge.svg)](https://github.com/vikas0799/staynest/actions/workflows/ci.yml)
+
 # 🏡 StayNest
 
 **StayNest** is a full-stack stay-booking platform (think a mini Airbnb for India) built with the **MERN stack** — MongoDB, Express, React and Node.js. Guests can discover homestays, havelis, villas and hostels, book them for specific dates and leave reviews; hosts list their properties and manage booking requests.
