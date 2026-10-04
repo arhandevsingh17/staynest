@@ -117,3 +117,50 @@ label { display: flex; flex-direction: column; gap: 4px; font-size: 0.9rem; colo
 .footer { text-align: center; color: var(--muted); padding: 24px; border-top: 1px solid var(--border); }
 
 /* TODO: detail-layout and search-bar break on mobile (<768px) - see "Mobile responsive" issue */
+
+.skeleton {
+  background: #eee8e2;
+  background-image: linear-gradient(
+    90deg,
+    #eee8e2 0%,
+    #f8f4ef 50%,
+    #eee8e2 100%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s ease-in-out infinite;
+  border-radius: 6px;
+}
+
+.skeleton-image {
+  aspect-ratio: 4 / 3;
+  width: 100%;
+}
+
+.skeleton-row {
+  width: 100%;
+  height: 20px;
+}
+
+.skeleton-title {
+  width: 80%;
+  height: 20px;
+}
+
+.skeleton-location {
+  width: 60%;
+  height: 16px;
+}
+
+.skeleton-price {
+  width: 45%;
+  height: 18px;
+}
+
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
