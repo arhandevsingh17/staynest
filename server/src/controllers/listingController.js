@@ -82,6 +82,20 @@ export const getReviews = asyncHandler(async (req, res) => {
   res.json(reviews);
 });
 
+const recalculateRating = async (listingId) => {
+  const stats = await Review.aggregate([
+    { $match: { listing: listingId } },
+    { $group: { _id: '$listing', avg: { $avg: '$rating' }, count: { $sum: 1 } } },
+  ]);
+
+  const listing = await Listing.findById(listingId);
+  if (!listing) return;
+
+  listing.avgRating = stats.length ? Math.round(stats[0].avg * 10) / 10 : 0;
+  listing.reviewCount = stats.length ? stats[0].count : 0;
+  await listing.save();
+};
+
 // POST /api/listings/:id/reviews
 export const addReview = asyncHandler(async (req, res) => {
   const { rating, comment } = req.body;
@@ -97,21 +111,73 @@ export const addReview = asyncHandler(async (req, res) => {
     guest: req.user._id,
     status: 'completed',
   });
+
   if (!stayed) {
     res.status(403);
     throw new Error('You can review only after completing a stay');
   }
 
-  const review = await Review.create({ listing: listing._id, user: req.user._id, rating, comment });
+  const review = await Review.create({
+    listing: listing._id,
+    user: req.user._id,
+    rating,
+    comment,
+  });
 
-  // Recalculate rating
-  const stats = await Review.aggregate([
-    { $match: { listing: listing._id } },
-    { $group: { _id: '$listing', avg: { $avg: '$rating' }, count: { $sum: 1 } } },
-  ]);
-  listing.avgRating = Math.round(stats[0].avg * 10) / 10;
-  listing.reviewCount = stats[0].count;
-  await listing.save();
+  await recalculateRating(listing._id);
 
   res.status(201).json(review);
+});
+
+// PUT /api/listings/:id/reviews/:reviewId
+export const updateReview = asyncHandler(async (req, res) => {
+  const review = await Review.findOne({
+    _id: req.params.reviewId,
+    listing: req.params.id,
+  });
+
+  if (!review) {
+    res.status(404);
+    throw new Error('Review not found');
+  }
+
+  if (!review.user.equals(req.user._id)) {
+    res.status(403);
+    throw new Error('You can only edit your own review');
+  }
+
+  const { rating, comment } = req.body;
+
+  if (rating !== undefined) review.rating = rating;
+  if (comment !== undefined) review.comment = comment;
+
+  await review.save();
+  await recalculateRating(review.listing);
+
+  res.json(review);
+});
+
+// DELETE /api/listings/:id/reviews/:reviewId
+export const deleteReview = asyncHandler(async (req, res) => {
+  const review = await Review.findOne({
+    _id: req.params.reviewId,
+    listing: req.params.id,
+  });
+
+  if (!review) {
+    res.status(404);
+    throw new Error('Review not found');
+  }
+
+  if (!review.user.equals(req.user._id)) {
+    res.status(403);
+    throw new Error('You can only delete your own review');
+  }
+
+  const listingId = review.listing;
+
+  await review.deleteOne();
+  await recalculateRating(listingId);
+
+  res.json({ message: 'Review deleted' });
 });
